@@ -280,7 +280,7 @@ export default function AddItemSheet({ onClose, autoCamera = false, scanResult, 
               {LOCATIONS.map(loc => (
                 <button key={loc} onClick={() => setLocation(loc)}
                   className={`btn btn-sm rounded-xl capitalize ${location === loc ? `${LOC_ACTIVE[loc]} btn-outline` : 'btn-ghost border border-base-300'}`}>
-                  {loc}
+                  {loc === 'spice_rack' ? 'Spice Rack' : loc}
                 </button>
               ))}
             </div>

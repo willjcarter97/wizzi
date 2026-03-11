@@ -62,7 +62,7 @@ export default function HomePage() {
                 <div key={loc} className={`rounded-2xl border p-3.5 ${color}`}>
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{emoji}</span>
-                    <span className="text-sm font-semibold capitalize">{loc}</span>
+                    <span className="text-sm font-semibold capitalize">{loc === 'spice_rack' ? 'Spice Rack' : loc}</span>
                   </div>
                   <p className="text-2xl font-bold font-mono mt-1">{count}</p>
                   <p className="text-xs text-base-content/40">item{count !== 1 ? 's' : ''}</p>

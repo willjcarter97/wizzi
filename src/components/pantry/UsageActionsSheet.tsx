@@ -236,7 +236,7 @@ export default function UsageActionsSheet({ item, onClose }: UsageActionsSheetPr
                 {LOCATIONS.map(loc => (
                   <button key={loc} onClick={() => setEditLocation(loc)}
                     className={`btn btn-sm rounded-xl capitalize ${editLocation === loc ? `${LOC_ACTIVE[loc]} btn-outline` : 'btn-ghost border border-base-300'}`}>
-                    {loc}
+                    {loc === 'spice_rack' ? 'Spice Rack' : loc}
                   </button>
                 ))}
               </div>
