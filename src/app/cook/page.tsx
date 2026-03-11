@@ -7,6 +7,7 @@ import { ChefHat, Check, X, ArrowLeft, Mic } from 'lucide-react'
 import { useRecipeStore } from '@/lib/stores/recipes'
 import { usePantryStore } from '@/lib/stores/pantry'
 import toast from 'react-hot-toast'
+import { formatQty } from '@/lib/format'
 
 function CookPageContent() {
   const router = useRouter()
@@ -153,7 +154,7 @@ function CookPageContent() {
               {preview.map((item, i) => (
                 <div key={i} className="flex items-center justify-between p-3.5 bg-base-100 border border-base-300 rounded-2xl">
                   <span className="text-sm font-medium">{item.item_name}</span>
-                  <span className="text-xs font-mono text-error">−{Math.abs(item.quantity_change)}{item.unit}</span>
+                  <span className="text-xs font-mono text-error">−{formatQty(Math.abs(item.quantity_change))}{item.unit}</span>
                 </div>
               ))}
               {preview.length === 0 && (

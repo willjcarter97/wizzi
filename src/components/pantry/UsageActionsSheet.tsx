@@ -6,6 +6,7 @@ import { Trash2, ChefHat, Minus, X, Pencil } from 'lucide-react'
 import { usePantryStore } from '@/lib/stores/pantry'
 import toast from 'react-hot-toast'
 import type { PantryItem, PantryLocation, PantryUnit } from '@/types'
+import { formatQty } from '@/lib/format'
 import FullnessBar from './FullnessBar'
 import CategoryIcon from './CategoryIcon'
 
@@ -13,7 +14,7 @@ interface UsageActionsSheetProps { item: PantryItem; onClose: () => void }
 
 const REASONS = ['Expired', 'Gone off', 'Forgot about it', 'Wrong item']
 const LOCATIONS: PantryLocation[] = ['fridge', 'freezer', 'cupboard', 'spice_rack']
-const UNITS: PantryUnit[] = ['units', 'g', 'kg', 'ml', 'l', 'tbsp', 'tsp', 'cups', 'portions']
+const UNITS: string[] = ['units', 'g', 'kg', 'ml', 'l', 'tbsp', 'tsp', 'cups', 'portions', 'cloves']
 
 const LOC_ACTIVE: Record<PantryLocation, string> = {
   fridge: 'btn-info', freezer: 'btn-primary', cupboard: 'btn-warning', spice_rack: 'btn-secondary',
@@ -106,7 +107,7 @@ export default function UsageActionsSheet({ item, onClose }: UsageActionsSheetPr
             <div className="mb-6">
               <FullnessBar itemId={item.id} fullness={item.fullness} interactive />
               <p className="text-xs text-base-content/40 font-mono mt-1.5">
-                {item.quantity}{item.unit} remaining · {item.location}
+                {formatQty(item.quantity)}{item.unit} remaining · {item.location}
               </p>
             </div>
 
@@ -250,10 +251,11 @@ export default function UsageActionsSheet({ item, onClose }: UsageActionsSheetPr
               </fieldset>
               <fieldset className="fieldset flex-1">
                 <legend className="fieldset-legend text-xs">Unit</legend>
-                <select value={editUnit} onChange={e => setEditUnit(e.target.value as PantryUnit)}
-                  className="select select-bordered w-full">
-                  {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                </select>
+                <input list="edit-unit-options" value={editUnit} onChange={e => setEditUnit(e.target.value)}
+                  placeholder="e.g. cloves" className="input input-bordered w-full" />
+                <datalist id="edit-unit-options">
+                  {UNITS.map(u => <option key={u} value={u} />)}
+                </datalist>
               </fieldset>
             </div>
 

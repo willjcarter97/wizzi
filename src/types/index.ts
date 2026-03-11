@@ -1,7 +1,7 @@
 // ─── Core pantry types ───────────────────────────────────────────────────────
 
 export type PantryLocation = 'fridge' | 'freezer' | 'cupboard' | 'spice_rack'
-export type PantryUnit = 'g' | 'kg' | 'ml' | 'l' | 'units' | 'tbsp' | 'tsp' | 'cups' | 'portions'
+export type PantryUnit = string
 export type UsageAction = 'cooked' | 'threw_out' | 'used'
 export type DailyPlanSlot = 'breakfast' | 'snack' | 'lunch' | 'dinner'
 
@@ -63,6 +63,8 @@ export interface Recipe {
   saved_at: string
   last_cooked?: string
   cook_count: number
+  origin?: string
+  country_flag?: string
 }
 
 export interface RecipeSuggestion {
@@ -110,6 +112,7 @@ export type MealCategory = 'snack' | 'quick' | 'proper' | 'batch'
 export interface MealFinderResult {
   recipe_name: string
   origin: string
+  country_flag: string
   why_authentic: string
   ingredients_have: RecipeIngredient[]
   ingredients_need: RecipeIngredient[]

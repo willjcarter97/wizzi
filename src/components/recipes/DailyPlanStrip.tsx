@@ -92,7 +92,7 @@ export default function DailyPlanStrip() {
                     </div>
 
                     <h3 className="font-bold text-base text-base-content leading-tight">
-                      {top.recipe.name}
+                      {top.recipe.country_flag && `${top.recipe.country_flag} `}{top.recipe.name}
                     </h3>
                     <p className="text-xs text-base-content/50 mt-0.5 line-clamp-1">
                       {top.recipe.description}

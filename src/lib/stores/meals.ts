@@ -184,6 +184,8 @@ export const useMealsStore = create<MealsStore>((set, get) => ({
       ai_generated: true,
       saved_at: new Date().toISOString(),
       cook_count: 0,
+      origin: result.origin,
+      country_flag: result.country_flag,
     }
 
     await useRecipeStore.getState().saveRecipe(recipe)

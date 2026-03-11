@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useMealsStore } from '@/lib/stores/meals'
 import { Clock, Check, ShoppingCart, BookmarkPlus, ChevronDown, ChevronUp, Sparkles, Search, ClipboardPaste, Link, Plus, History, Camera, X } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { formatQty } from '@/lib/format'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { MealCategory } from '@/types'
 
@@ -316,7 +317,7 @@ export default function MealsPage() {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold leading-tight truncate">{find.recipe_name}</p>
+                        <p className="text-sm font-semibold leading-tight truncate">{find.country_flag && `${find.country_flag} `}{find.recipe_name}</p>
                         <p className="text-xs text-base-content/40 truncate mt-0.5">
                           {find.origin} · {find.prep_time_minutes + find.cook_time_minutes}m · Serves {find.servings}
                         </p>
@@ -387,7 +388,7 @@ export default function MealsPage() {
                         <Clock size={11} /> {result.prep_time_minutes + result.cook_time_minutes}m
                       </span>
                     </div>
-                    <h2 className="text-xl font-bold text-white leading-tight">{result.recipe_name}</h2>
+                    <h2 className="text-xl font-bold text-white leading-tight">{result.country_flag && `${result.country_flag} `}{result.recipe_name}</h2>
                     {result.origin && <p className="text-sm text-white/70 mt-1">{result.origin}</p>}
                   </div>
                 </div>
@@ -407,7 +408,7 @@ export default function MealsPage() {
                       <Clock size={11} /> {result.prep_time_minutes + result.cook_time_minutes}m
                     </span>
                   </div>
-                  <h2 className="text-xl font-bold leading-tight">{result.recipe_name}</h2>
+                  <h2 className="text-xl font-bold leading-tight">{result.country_flag && `${result.country_flag} `}{result.recipe_name}</h2>
                   {result.origin && <p className="text-sm text-primary font-medium mt-1">{result.origin}</p>}
                 </div>
               )}
@@ -433,7 +434,7 @@ export default function MealsPage() {
                       {result.ingredients_have.map((ing, i) => (
                         <div key={i} className="flex items-center justify-between px-3 py-2 bg-success/5 border border-success/10 rounded-xl">
                           <span className="text-sm">{ing.name}</span>
-                          <span className="text-xs font-mono text-base-content/40">{ing.quantity} {ing.unit}</span>
+                          <span className="text-xs font-mono text-base-content/40">{formatQty(ing.quantity)} {ing.unit}</span>
                         </div>
                       ))}
                     </div>
@@ -450,7 +451,7 @@ export default function MealsPage() {
                       {result.ingredients_need.map((ing, i) => (
                         <div key={i} className="flex items-center justify-between px-3 py-2 bg-warning/5 border border-warning/10 rounded-xl">
                           <span className="text-sm">{ing.name}</span>
-                          <span className="text-xs font-mono text-base-content/40">{ing.quantity} {ing.unit}</span>
+                          <span className="text-xs font-mono text-base-content/40">{formatQty(ing.quantity)} {ing.unit}</span>
                         </div>
                       ))}
                     </div>

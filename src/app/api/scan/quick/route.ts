@@ -24,6 +24,8 @@ Examples:
 - "half a loaf of bread" → name: "Bread", quantity: 0.5, max_quantity: 1, unit: "units", location: "spice_rack", category: "bakery"
 - "bag of frozen peas" → name: "Frozen Peas", quantity: 900, max_quantity: 900, unit: "g", location: "freezer", category: "frozen"
 - "Lurpak butter" → name: "Butter", brand: "Lurpak", quantity: 250, max_quantity: 250, unit: "g", location: "fridge", category: "dairy"
+- "garlic" → name: "Garlic", quantity: 1, max_quantity: 1, unit: "units", location: "spice_rack", category: "produce"
+- "3 cloves garlic" → name: "Garlic Cloves", quantity: 3, max_quantity: 3, unit: "cloves", location: "spice_rack", category: "produce"
 
 Return a JSON object:
 {
@@ -31,12 +33,13 @@ Return a JSON object:
   "brand": "Brand if mentioned, otherwise empty string",
   "quantity": number,
   "max_quantity": number (same as quantity unless they said "half" etc),
-  "unit": "g" | "kg" | "ml" | "l" | "units" | "tbsp" | "tsp" | "cups" | "portions",
+  "unit": "g" | "kg" | "ml" | "l" | "units" | "tbsp" | "tsp" | "cups" | "portions" | "cloves" | or any other sensible unit,
   "location": "fridge" | "freezer" | "cupboard" | "spice_rack",
   "category": "dairy" | "grains" | "produce" | "condiments" | "snacks" | "meat" | "frozen" | "drinks" | "bakery" | "canned" | "spices" | "other"
 }
 
 Use typical UK supermarket sizes when the user doesn't specify quantity (e.g. milk=2000ml, butter=250g, eggs=6).
+When the user does not mention a partial amount, always set quantity equal to max_quantity (100% full). Only set quantity lower than max_quantity when the user explicitly says "half", "mostly gone", "quarter left", etc.
 Return ONLY valid JSON. No prose. No markdown fences.`,
     messages: [{ role: 'user', content: text.trim() }],
   })

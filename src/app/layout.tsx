@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Toaster } from 'react-hot-toast'
 import { Plus_Jakarta_Sans, Fira_Mono } from 'next/font/google'
 import BottomBar from '@/components/ui/BottomBar'
+import FlagPolyfill from '@/components/ui/FlagPolyfill'
 import './globals.css'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-theme="wizzilist" className={`${plusJakartaSans.variable} ${firaMono.variable}`}>
       <body className="bg-base-100 text-base-content font-sans antialiased min-h-screen">
+        <FlagPolyfill />
         {children}
         <BottomBar />
         <Toaster

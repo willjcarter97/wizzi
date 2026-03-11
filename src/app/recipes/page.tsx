@@ -330,7 +330,7 @@ function RecipeDetail({ recipe, pantryItems, onClose, onRemove }: {
                     <Clock size={11} /> {recipe.prep_time_minutes + recipe.cook_time_minutes}m
                   </span>
                 </div>
-                <h2 className="text-xl font-bold text-white leading-tight">{recipe.name}</h2>
+                <h2 className="text-xl font-bold text-white leading-tight">{recipe.country_flag && `${recipe.country_flag} `}{recipe.name}</h2>
               </div>
             </div>
           ) : (
@@ -343,7 +343,7 @@ function RecipeDetail({ recipe, pantryItems, onClose, onRemove }: {
                   <Clock size={11} /> {recipe.prep_time_minutes + recipe.cook_time_minutes}m
                 </span>
               </div>
-              <h2 className="text-xl font-bold leading-tight">{recipe.name}</h2>
+              <h2 className="text-xl font-bold leading-tight">{recipe.country_flag && `${recipe.country_flag} `}{recipe.name}</h2>
             </div>
           )}
         </div>
@@ -550,7 +550,7 @@ function RecipeCard({ recipe, pantryItems, index, onClick }: {
             </span>
           </div>
 
-          <h3 className="font-bold text-sm leading-tight line-clamp-1">{recipe.name}</h3>
+          <h3 className="font-bold text-sm leading-tight line-clamp-1">{recipe.country_flag && `${recipe.country_flag} `}{recipe.name}</h3>
           <p className="text-xs text-base-content/40 mt-0.5 line-clamp-1">{recipe.description}</p>
 
           <div className="mt-2.5 flex items-center gap-2">

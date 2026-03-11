@@ -188,7 +188,7 @@ export async function enrichScannedProduct(
   location: "fridge" | "freezer" | "cupboard" | "spice_rack" (most likely storage),
   quantity: number (initial quantity from quantity_string, or 1),
   max_quantity: number (same as quantity — it's just been added),
-  unit: "g" | "kg" | "ml" | "l" | "units" | "tbsp" | "tsp" | "cups" | "portions"
+  unit: "g" | "kg" | "ml" | "l" | "units" | "tbsp" | "tsp" | "cups" | "portions" | "cloves" | or any other sensible unit
 }
 Return ONLY valid JSON. No prose. No markdown fences.`,
     messages: [
@@ -205,12 +205,10 @@ Return ONLY valid JSON. No prose. No markdown fences.`,
 
 // ─── Photo product identification ────────────────────────────────────────────
 
-// Accepts a base64-encoded image of a pantry item and returns structured data:
-// name, brand, unit, max_quantity (standard package size from label), and a
-// best-guess current_quantity (estimated from visible fill level / packaging).
+// Accepts one or more base64-encoded images of a pantry item and returns structured data.
+// Multiple photos allow the user to capture front label, nutrition info, expiry date, etc.
 export async function identifyProductFromPhoto(
-  base64Image: string,
-  mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' = 'image/jpeg'
+  images: Array<{ base64: string; mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' }>
 ): Promise<{
   name: string
   brand: string
@@ -221,39 +219,47 @@ export async function identifyProductFromPhoto(
   current_quantity: number
   confidence: 'high' | 'medium' | 'low'
   notes: string
+  expiry_date: string
 }> {
+  const imageBlocks = images.map((img, i) => ({
+    type: 'image' as const,
+    source: {
+      type: 'base64' as const,
+      media_type: img.mediaType,
+      data: img.base64,
+    },
+  }))
+
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 600,
     system: `You are a pantry management assistant with computer vision capabilities.
-Analyse an image of a food/drink/pantry item and return a JSON object.
+You may receive one or more photos of the same product from different angles.
+The first photo is typically the front/label. Additional photos may show nutrition info, weight, expiry date, or the current fill level.
+Combine information from ALL photos to produce the most accurate result.
+
+Analyse the image(s) and return a JSON object.
 
 Rules:
 - name: clean product name without brand (e.g. "Semi-skimmed Milk", not "Cravendale Semi-skimmed Milk")
 - brand: brand name if visible, otherwise ""
 - category: one of "dairy","grains","produce","condiments","snacks","meat","frozen","drinks","bakery","canned","spices","other"
 - location: most likely storage location — "fridge" | "freezer" | "cupboard" | "spice_rack"
-- unit: best unit for this item — "g" | "kg" | "ml" | "l" | "units" | "tbsp" | "tsp" | "cups" | "portions"
+- unit: best unit for this item — "g" | "kg" | "ml" | "l" | "units" | "tbsp" | "tsp" | "cups" | "portions" | "cloves" | or any other sensible unit
 - max_quantity: standard full/new package size in chosen unit (read from label if visible, otherwise use typical UK supermarket size)
-- current_quantity: your best estimate of the CURRENT amount remaining, in the same unit. Look at fill level in transparent containers, or assume ~70% full if packaging is opaque and looks unopened, lower if it looks used.
+- current_quantity: your best estimate of the CURRENT amount remaining, in the same unit. Look at fill level in transparent containers. If you cannot clearly determine the fill level (opaque packaging, sealed container, etc.), set current_quantity equal to max_quantity (100% full). Only estimate lower than 100% if you can visually confirm the item has been opened or partially used.
 - confidence: "high" if you can clearly read the label, "medium" if partially visible, "low" if guessing
 - notes: one brief sentence explaining your quantity estimate
+- expiry_date: ISO date string (YYYY-MM-DD) if visible on packaging, otherwise ""
 
 Return ONLY valid JSON. No prose. No markdown fences.`,
     messages: [
       {
         role: 'user',
         content: [
+          ...imageBlocks,
           {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: mediaType,
-              data: base64Image,
-            },
-          },
-          {
-            type: 'text',
+            type: 'text' as const,
             text: 'Identify this pantry item and estimate its quantities.',
           },
         ],
@@ -274,6 +280,7 @@ export async function findAuthenticRecipe(
 ): Promise<{
   recipe_name: string
   origin: string
+  country_flag: string
   why_authentic: string
   ingredients_have: { name: string; quantity: number; unit: string; optional: boolean }[]
   ingredients_need: { name: string; quantity: number; unit: string; optional: boolean }[]
@@ -302,10 +309,11 @@ export async function findAuthenticRecipe(
     system: `You are a culinary researcher who finds SPECIFIC, AUTHENTIC, well-sourced recipes. You are NOT a generic meal planner.
 
 CRITICAL RULE - RESPECT THE USER'S REQUEST:
-- If the user asks for a specific dish (e.g. "BLT", "carbonara", "pad thai"), return EXACTLY that dish. Do NOT substitute a different recipe just because it uses more pantry items.
-- The pantry list is provided ONLY so you can split ingredients into "have" vs "need to buy". It is NOT a constraint on what recipe to return.
-- Never add extra ingredients to a recipe just because they are in the pantry. A BLT has bacon, lettuce, and tomato - not avocado just because they have one.
-- Only when the user's request is vague (e.g. "something quick", "use up the chicken") should you factor in pantry contents when choosing the recipe.
+- If the user asks for a specific dish (e.g. "BLT", "beans on toast", "carbonara", "pad thai"), return EXACTLY that dish with its STANDARD, TRADITIONAL ingredients. Do NOT substitute or modify the recipe.
+- The pantry list is provided ONLY so you can split the recipe's own ingredients into "have" vs "need to buy". It must NEVER influence WHAT ingredients appear in the recipe.
+- NEVER add extra ingredients to a recipe because they happen to be in the pantry. Beans on toast has beans and toast, not garlic. A BLT has bacon, lettuce, and tomato, not avocado. Carbonara has guanciale, egg, pecorino, and pepper, not mushrooms.
+- The pantry is for CATEGORISING ingredients only: "do they already have butter? yes -> ingredients_have. no -> ingredients_need." That is the ONLY use of the pantry list.
+- Only when the user's request is genuinely open-ended (e.g. "something quick", "use up the chicken", "surprise me") should you factor in pantry contents when choosing WHICH recipe to suggest.
 
 YOUR MANDATE:
 - Find a REAL recipe with a REAL name from a REAL culinary tradition. Never invent generic placeholder recipes.
@@ -316,11 +324,12 @@ YOUR MANDATE:
 
 QUALITY RULES:
 1. The recipe name must be specific and cultural (include the original language name where natural).
-2. Ingredients must be precise: "2 dried ancho chillies" not "chilli powder to taste".
-3. Instructions must be detailed enough for a first-timer: include temperatures, visual cues, timing.
-4. Cross-reference the user's pantry ONLY to split ingredients into "have" vs "need to buy". Do NOT change the recipe to match the pantry.
-5. When matching pantry items, be generous: if they have "olive oil" and the recipe needs "extra virgin olive oil", count it as a match.
-6. Adapt portion sizes to serve 2 people unless the category is batch cooking.
+2. Ingredients must be ONLY what the recipe traditionally calls for. Do NOT pad the ingredient list with pantry items. If beans on toast needs 4 ingredients, return 4 ingredients, not 8.
+3. Ingredients must be precise: "2 dried ancho chillies" not "chilli powder to taste".
+4. Instructions must be detailed enough for a first-timer: include temperatures, visual cues, timing.
+5. Cross-reference the user's pantry ONLY to split the recipe's own ingredients into "have" vs "need to buy". Do NOT add, remove, or modify any ingredients based on the pantry.
+6. When matching pantry items, be generous: if they have "olive oil" and the recipe needs "extra virgin olive oil", count it as a match.
+7. Adapt portion sizes to serve 2 people unless the category is batch cooking.
 
 FORMATTING RULES:
 - NEVER use em dashes or en dashes. Use hyphens (-) or commas instead.
@@ -330,6 +339,7 @@ Return a JSON object:
 {
   "recipe_name": "Specific Recipe Name (Original Language if applicable)",
   "origin": "Region/City, Country or Tradition/Chef",
+  "country_flag": "🏳️ (single flag emoji for the country of origin, e.g. 🇮🇹 for Italy, 🇲🇽 for Mexico, 🇬🇧 for UK, 🇯🇵 for Japan)",
   "why_authentic": "1-2 sentences on what makes this the real deal",
   "ingredients_have": [{ "name": "...", "quantity": N, "unit": "...", "optional": false }],
   "ingredients_need": [{ "name": "...", "quantity": N, "unit": "...", "optional": false }],
@@ -364,6 +374,7 @@ export async function parseRecipeFromText(
 ): Promise<{
   recipe_name: string
   origin: string
+  country_flag: string
   why_authentic: string
   ingredients_have: { name: string; quantity: number; unit: string; optional: boolean }[]
   ingredients_need: { name: string; quantity: number; unit: string; optional: boolean }[]
@@ -400,6 +411,7 @@ Return a JSON object:
 {
   "recipe_name": "The recipe name as written",
   "origin": "Source or cuisine origin if identifiable",
+  "country_flag": "🏳️ (single flag emoji for the country of origin, e.g. 🇮🇹 for Italy, 🇲🇽 for Mexico, 🇬🇧 for UK)",
   "why_authentic": "Brief note on the recipe",
   "ingredients_have": [{ "name": "...", "quantity": N, "unit": "...", "optional": false }],
   "ingredients_need": [{ "name": "...", "quantity": N, "unit": "...", "optional": false }],
@@ -436,6 +448,7 @@ export async function parseRecipeFromPhoto(
 ): Promise<{
   recipe_name: string
   origin: string
+  country_flag: string
   why_authentic: string
   ingredients_have: { name: string; quantity: number; unit: string; optional: boolean }[]
   ingredients_need: { name: string; quantity: number; unit: string; optional: boolean }[]
@@ -472,6 +485,7 @@ Return a JSON object:
 {
   "recipe_name": "The recipe name as written",
   "origin": "Source or cuisine origin if identifiable",
+  "country_flag": "🏳️ (single flag emoji for the country of origin, e.g. 🇮🇹 for Italy, 🇲🇽 for Mexico, 🇬🇧 for UK)",
   "why_authentic": "Brief note on the recipe",
   "ingredients_have": [{ "name": "...", "quantity": N, "unit": "...", "optional": false }],
   "ingredients_need": [{ "name": "...", "quantity": N, "unit": "...", "optional": false }],
