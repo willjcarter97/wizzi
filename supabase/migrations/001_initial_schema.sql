@@ -7,7 +7,7 @@ create table pantry_items (
   name          text not null,
   brand         text,
   barcode       text,
-  location      text not null check (location in ('fridge','freezer','cupboard','counter')),
+  location      text not null check (location in ('fridge','freezer','cupboard','spice_rack')),
   quantity      numeric not null default 1,
   max_quantity  numeric not null default 1,
   unit          text not null default 'units',

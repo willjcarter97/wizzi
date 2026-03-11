@@ -173,7 +173,7 @@ export async function enrichScannedProduct(
 ): Promise<{
   name: string
   category: string
-  location: 'fridge' | 'freezer' | 'cupboard' | 'counter'
+  location: 'fridge' | 'freezer' | 'cupboard' | 'spice_rack'
   quantity: number
   max_quantity: number
   unit: string
@@ -185,7 +185,7 @@ export async function enrichScannedProduct(
 {
   name: string (clean product name, no brand),
   category: string (e.g. "dairy", "grains", "produce", "condiments", "snacks", "meat", "frozen"),
-  location: "fridge" | "freezer" | "cupboard" | "counter" (most likely storage),
+  location: "fridge" | "freezer" | "cupboard" | "spice_rack" (most likely storage),
   quantity: number (initial quantity from quantity_string, or 1),
   max_quantity: number (same as quantity — it's just been added),
   unit: "g" | "kg" | "ml" | "l" | "units" | "tbsp" | "tsp" | "cups" | "portions"
@@ -215,7 +215,7 @@ export async function identifyProductFromPhoto(
   name: string
   brand: string
   category: string
-  location: 'fridge' | 'freezer' | 'cupboard' | 'counter'
+  location: 'fridge' | 'freezer' | 'cupboard' | 'spice_rack'
   unit: string
   max_quantity: number
   current_quantity: number
@@ -232,7 +232,7 @@ Rules:
 - name: clean product name without brand (e.g. "Semi-skimmed Milk", not "Cravendale Semi-skimmed Milk")
 - brand: brand name if visible, otherwise ""
 - category: one of "dairy","grains","produce","condiments","snacks","meat","frozen","drinks","bakery","canned","spices","other"
-- location: most likely storage location — "fridge" | "freezer" | "cupboard" | "counter"
+- location: most likely storage location — "fridge" | "freezer" | "cupboard" | "spice_rack"
 - unit: best unit for this item — "g" | "kg" | "ml" | "l" | "units" | "tbsp" | "tsp" | "cups" | "portions"
 - max_quantity: standard full/new package size in chosen unit (read from label if visible, otherwise use typical UK supermarket size)
 - current_quantity: your best estimate of the CURRENT amount remaining, in the same unit. Look at fill level in transparent containers, or assume ~70% full if packaging is opaque and looks unopened, lower if it looks used.

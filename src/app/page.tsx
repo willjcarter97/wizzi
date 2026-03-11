@@ -11,7 +11,7 @@ const LOCATION_META: Record<PantryLocation, { emoji: string; color: string }> = 
   fridge:   { emoji: '🧊', color: 'bg-sky-50 border-sky-200' },
   freezer:  { emoji: '❄️', color: 'bg-indigo-50 border-indigo-200' },
   cupboard: { emoji: '🗄️', color: 'bg-amber-50 border-amber-200' },
-  counter:  { emoji: '🍎', color: 'bg-yellow-50 border-yellow-200' },
+  spice_rack: { emoji: '🧂', color: 'bg-yellow-50 border-yellow-200' },
 }
 
 function getGreeting(): string {

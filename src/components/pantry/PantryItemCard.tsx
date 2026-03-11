@@ -14,7 +14,7 @@ const LOCATION_BORDER: Record<string, string> = {
   fridge:   'border-l-sky-400',
   freezer:  'border-l-indigo-400',
   cupboard: 'border-l-amber-400',
-  counter:  'border-l-yellow-400',
+  spice_rack: 'border-l-yellow-400',
 }
 
 function ProductImage({ item }: { item: PantryItem }) {

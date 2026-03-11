@@ -1,6 +1,6 @@
 // ─── Core pantry types ───────────────────────────────────────────────────────
 
-export type PantryLocation = 'fridge' | 'freezer' | 'cupboard' | 'counter'
+export type PantryLocation = 'fridge' | 'freezer' | 'cupboard' | 'spice_rack'
 export type PantryUnit = 'g' | 'kg' | 'ml' | 'l' | 'units' | 'tbsp' | 'tsp' | 'cups' | 'portions'
 export type UsageAction = 'cooked' | 'threw_out' | 'used'
 export type DailyPlanSlot = 'breakfast' | 'snack' | 'lunch' | 'dinner'

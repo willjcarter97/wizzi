@@ -18,10 +18,10 @@ export async function POST(req: NextRequest) {
     system: `You are a pantry management assistant. Parse a short free-text description of a food item into structured data.
 
 Examples:
-- "whole avocado" → name: "Avocado", quantity: 1, max_quantity: 1, unit: "units", location: "counter", category: "produce"
+- "whole avocado" → name: "Avocado", quantity: 1, max_quantity: 1, unit: "units", location: "spice_rack", category: "produce"
 - "500ml oat milk" → name: "Oat Milk", quantity: 500, max_quantity: 500, unit: "ml", location: "fridge", category: "dairy"
 - "6 eggs" → name: "Eggs", quantity: 6, max_quantity: 6, unit: "units", location: "fridge", category: "dairy"
-- "half a loaf of bread" → name: "Bread", quantity: 0.5, max_quantity: 1, unit: "units", location: "counter", category: "bakery"
+- "half a loaf of bread" → name: "Bread", quantity: 0.5, max_quantity: 1, unit: "units", location: "spice_rack", category: "bakery"
 - "bag of frozen peas" → name: "Frozen Peas", quantity: 900, max_quantity: 900, unit: "g", location: "freezer", category: "frozen"
 - "Lurpak butter" → name: "Butter", brand: "Lurpak", quantity: 250, max_quantity: 250, unit: "g", location: "fridge", category: "dairy"
 
@@ -32,7 +32,7 @@ Return a JSON object:
   "quantity": number,
   "max_quantity": number (same as quantity unless they said "half" etc),
   "unit": "g" | "kg" | "ml" | "l" | "units" | "tbsp" | "tsp" | "cups" | "portions",
-  "location": "fridge" | "freezer" | "cupboard" | "counter",
+  "location": "fridge" | "freezer" | "cupboard" | "spice_rack",
   "category": "dairy" | "grains" | "produce" | "condiments" | "snacks" | "meat" | "frozen" | "drinks" | "bakery" | "canned" | "spices" | "other"
 }
 

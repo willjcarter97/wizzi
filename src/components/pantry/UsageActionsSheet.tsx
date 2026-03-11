@@ -12,11 +12,11 @@ import CategoryIcon from './CategoryIcon'
 interface UsageActionsSheetProps { item: PantryItem; onClose: () => void }
 
 const REASONS = ['Expired', 'Gone off', 'Forgot about it', 'Wrong item']
-const LOCATIONS: PantryLocation[] = ['fridge', 'freezer', 'cupboard', 'counter']
+const LOCATIONS: PantryLocation[] = ['fridge', 'freezer', 'cupboard', 'spice_rack']
 const UNITS: PantryUnit[] = ['units', 'g', 'kg', 'ml', 'l', 'tbsp', 'tsp', 'cups', 'portions']
 
 const LOC_ACTIVE: Record<PantryLocation, string> = {
-  fridge: 'btn-info', freezer: 'btn-primary', cupboard: 'btn-warning', counter: 'btn-secondary',
+  fridge: 'btn-info', freezer: 'btn-primary', cupboard: 'btn-warning', spice_rack: 'btn-secondary',
 }
 
 export default function UsageActionsSheet({ item, onClose }: UsageActionsSheetProps) {

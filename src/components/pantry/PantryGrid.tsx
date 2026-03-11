@@ -6,13 +6,13 @@ import { usePantryStore } from '@/lib/stores/pantry'
 import PantryItemCard from './PantryItemCard'
 import type { PantryLocation } from '@/types'
 
-const LOCATION_ORDER: PantryLocation[] = ['fridge', 'freezer', 'cupboard', 'counter']
+const LOCATION_ORDER: PantryLocation[] = ['fridge', 'freezer', 'cupboard', 'spice_rack']
 
 const LOCATION_META: Record<PantryLocation, { label: string; dot: string }> = {
   fridge:   { label: 'Fridge',   dot: 'bg-sky-400'    },
   freezer:  { label: 'Freezer',  dot: 'bg-indigo-400' },
   cupboard: { label: 'Cupboard', dot: 'bg-amber-400'  },
-  counter:  { label: 'Counter',  dot: 'bg-yellow-400' },
+  spice_rack: { label: 'Spice Rack', dot: 'bg-yellow-400' },
 }
 
 export default function PantryGrid() {

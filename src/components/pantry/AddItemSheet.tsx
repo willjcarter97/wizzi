@@ -11,14 +11,14 @@ import type { QuickResult } from '@/components/ui/BottomBar'
 
 interface AddItemSheetProps { onClose: () => void; autoCamera?: boolean; scanResult?: BarcodeResult | null; quickResult?: QuickResult | null }
 
-const LOCATIONS: PantryLocation[] = ['fridge', 'freezer', 'cupboard', 'counter']
+const LOCATIONS: PantryLocation[] = ['fridge', 'freezer', 'cupboard', 'spice_rack']
 const UNITS: PantryUnit[] = ['units', 'g', 'kg', 'ml', 'l', 'tbsp', 'tsp', 'cups', 'portions']
 
 const LOC_ACTIVE: Record<PantryLocation, string> = {
   fridge:   'btn-info',
   freezer:  'btn-primary',
   cupboard: 'btn-warning',
-  counter:  'btn-secondary',
+  spice_rack:  'btn-secondary',
 }
 
 export default function AddItemSheet({ onClose, autoCamera = false, scanResult, quickResult }: AddItemSheetProps) {
@@ -85,7 +85,7 @@ export default function AddItemSheet({ onClose, autoCamera = false, scanResult, 
     } else if (/milk|dairy|yogurt|yoghurt|cheese|cream|butter|juice|fresh|meat|chicken|fish|seafood|deli|chilled|eggs/.test(allText)) {
       setLocation('fridge')
     } else if (/bread|fruit|banana|apple|avocado|tomato|potato|onion|garlic/.test(allText)) {
-      setLocation('counter')
+      setLocation('spice_rack')
     } else {
       setLocation('cupboard')
     }
